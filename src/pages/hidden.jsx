@@ -67,7 +67,7 @@ const HiddenPage = ({f7router, user}) => {
     }, [chatData, messageData])
 
 
-    useEffect(async () => {
+    const createChannel = async () => {
         const post = await supabase.channel('messages_channel')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload) => {
                 console.log(payload)
@@ -77,6 +77,10 @@ const HiddenPage = ({f7router, user}) => {
                 (response) => console.log('Subscription response:', response),
                 (error) => console.error('Subscription error:', error)
             )
+    }
+
+    useEffect(() => {
+        createChannel()
     }, [])
 
     return (
