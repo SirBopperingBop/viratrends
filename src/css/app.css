@@ -1,1 +1,102 @@
 /* Your app custom styles here */
+
+:root {
+    --f7-block-font-size: 1rem;
+    --f7-block-title-font-size: 1.2rem;
+    --f7-block-title-line-height: 1.6rem;
+    --f7-block-title-text-color: black;
+    --f7-block-title-font-weight: 300;
+    --f7-card-font-size: 1rem;
+    --f7-theme-color: rgb(165, 163, 133) !important;
+
+    --f7-input-item-border-radius: 50px!important;
+    --f7-input-item-bg-color: unset!important;
+}
+
+.hidden-nav .navbar-bg{
+    background-color: #222222!important;
+}
+.hidden-nav {
+    color: white;
+}
+.message .item-content .item-inner {
+    display: block;
+    width: 100vw;
+    padding-right: 0.2rem;
+    padding-left: 0.2rem;
+    padding-bottom: 0.6rem;
+}
+.message .item-content .item-inner h1 {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.message {
+    max-width: 100vw;
+    min-width: 100vw;
+    width: 100vw;
+}
+.chat-list {
+    font-size: large;
+    width: 100vw;
+    margin: 0;
+    position: relative;
+    bottom: 0;
+    left: 0;
+    color: white;
+    overflow-y: auto;
+}
+.chat-list ul {
+    overflow-y: auto;
+    
+}
+.chat {
+    overflow-y: auto;
+    position: absolute;
+    z-index: 0;
+    padding: 0;
+    margin: 0;
+    color: white;
+    min-height: 70vh;
+    max-height: 70vh;
+    width: 100vw;
+    top: 10;
+    left: 0;
+    background-color: rgb(15,15,15);
+    background-position: center;
+    background-size: cover;
+    text-shadow: 0.1rem 0.1rem 0.6rem rgba(0, 0, 0, 0.84);
+}
+.message-box {
+    z-index: 1;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 24vh;
+    width: 100vw;
+    margin: 0;
+    font-size: large;
+}
+.send {
+    z-index: 2;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 0.5rem;
+    width: 20vw;
+    height: 6vh;
+}
+
+.travel-btn {
+    padding: 0;
+    margin: 0;
+    height: calc(151vh/7 - 1.5rem);
+    background-size: cover;
+    background-image: inherit;
+    width: 100%;
+}
+.travel-btn-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    height: 140vh;
+}
