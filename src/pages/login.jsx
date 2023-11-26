@@ -22,7 +22,7 @@ const LoginPage = ({f7router}) => {
         console.log(displayDataArray);
         const user = displayDataArray.filter(user => username == user.username)[0]
         console.log(user);
-        if (user.username == username) {
+        if (user.password == password) {
             console.log("success");
             setLogInfo(user)
             f7router.navigate("/hidden/", {
