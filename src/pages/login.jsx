@@ -37,7 +37,7 @@ const LoginPage = ({f7router}) => {
     }
     return (
         <Page>
-            <Navbar title="Login" backLink="Back" />
+            <Navbar title="Login"/>
             <Block strong inset>
                 <List
                     mediaList

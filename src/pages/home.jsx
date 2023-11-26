@@ -60,10 +60,12 @@ const HomePage = ({f7router}) => {
       </Block>
   
       <Panel left cover dark>
-        <Button fill bgColor='blue'
-          onClick={goLog}
-          panelClose
-        >Login</Button>
+        <Block>
+          <Button fill 
+            onClick={goLog}
+            panelClose
+          >Login</Button>
+        </Block>
       </Panel>
   
       <List strong inset dividersIos>
