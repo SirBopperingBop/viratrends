@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { Context } from "../components/app";
 import { supabase } from "../js/supabaseClient";
 
-export default function Hidden({user}) {
+const HiddenPage = ({f7router, user}) => {
     const [logInfo, setLogInfo] = useContext(Context)
     const [chatData, setChatData] = useState()
     const [messageData, setMessageData] = useState({
@@ -127,3 +127,5 @@ export default function Hidden({user}) {
         </Page>
     )
 }
+
+export default HiddenPage;
