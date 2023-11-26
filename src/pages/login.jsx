@@ -33,6 +33,7 @@ const LoginPage = ({f7router}) => {
 
         } else {
             console.log("fail, redirect");
+            location.refresh()
         }
     }
     return (
