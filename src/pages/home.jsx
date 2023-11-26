@@ -55,7 +55,7 @@ const HomePage = ({f7router}) => {
   
       <BlockTitle>Panels</BlockTitle>
       <Block className="grid grid-cols-2 grid-gap">
-        <Button fill panelOpen="left">Left Panel</Button>
+        {/* <Button fill panelOpen="left">Left Panel</Button> */}
         <Button fill panelOpen="right">Right Panel</Button>
       </Block>
   
