@@ -1,8 +1,7 @@
-import { Block, Button, List, ListItem, NavLeft, NavTitle, Navbar, Page, TextEditor, f7 } from "framework7-react";
+import { Block, Button, List, ListItem, NavLeft, NavTitle, Navbar, Page, TextEditor } from "framework7-react";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Context } from "../components/app";
 import { supabase } from "../js/supabaseClient";
-import Framework7 from "framework7/types";
 
 export default function Hidden({user}) {
     const [logInfo, setLogInfo] = useContext(Context)
