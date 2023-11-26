@@ -22,6 +22,10 @@ var routes = [
     component: LoginPage,
   },
   {
+    path: '/hidden/',
+    component: HiddenPage,
+  },
+  {
     path: '/about/',
     component: AboutPage,
   },
