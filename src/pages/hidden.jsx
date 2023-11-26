@@ -68,7 +68,7 @@ const HiddenPage = ({f7router, user}) => {
 
 
     const createChannel = async () => {
-        const post = await supabase.channel('messages_channel')
+        await supabase.channel('messages_channel')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload) => {
                 console.log(payload)
                 getTableData()
