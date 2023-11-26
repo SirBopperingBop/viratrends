@@ -24,3 +24,9 @@ Framework7.use(Framework7React)
 // Mount React App
 const root = createRoot(document.getElementById('app'));
 root.render(React.createElement(App));
+
+document.onvisibilitychange = function() {
+    if (document.visibilityState === 'hidden') {
+      location.reload()
+    }
+  };
