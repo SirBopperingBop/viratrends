@@ -1,0 +1,18 @@
+{
+  "cwd": "D:\\projects\\viratrends",
+  "type": [
+    "pwa"
+  ],
+  "name": "Viratrends",
+  "framework": "react",
+  "template": "tabs",
+  "bundler": "vite",
+  "cssPreProcessor": "scss",
+  "theming": {
+    "customColor": false,
+    "color": "#827a66",
+    "darkMode": false,
+    "iconFonts": true
+  },
+  "customBuild": false
+}
