@@ -27,6 +27,6 @@ root.render(React.createElement(App));
 
 document.onvisibilitychange = function() {
     if (document.visibilityState === 'hidden') {
-      // location.reload()
+      location.reload()
     }
   };
