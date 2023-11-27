@@ -4,6 +4,7 @@ import { Context } from "../components/app";
 import { supabase } from "../js/supabaseClient";
 
 const HiddenPage = ({f7router, user}) => {
+    const [cooldown, setCooldown] = useState(false)
     const [logInfo, setLogInfo] = useContext(Context)
     const [chatData, setChatData] = useState()
     const [messageData, setMessageData] = useState({
@@ -25,13 +26,15 @@ const HiddenPage = ({f7router, user}) => {
             .from('messages')
             .select('*')
         setChatData(data)
+        setCooldown(false)
     }
     useEffect(() => {
         getTableData()
     }, [])
 
     const handleSendMessage = async () => {
-        if (messageData.content !== "") {
+        if (messageData.content !== "" && cooldown == false) {
+            setCooldown(true)
             try {
                 const { data, error } = await supabase
                     .from("messages")
@@ -126,6 +129,7 @@ const HiddenPage = ({f7router, user}) => {
             <Button
                 className="send"
                 fill
+                style={{backgroundColor: cooldown ? "tomato" : "rgb(165, 163, 133)"}}
                 onClick={handleSendMessage}
             >Send</Button>
         </Page>
