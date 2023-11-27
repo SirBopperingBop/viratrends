@@ -86,6 +86,21 @@ const HiddenPage = ({f7router, user}) => {
         createChannel()
     }, [])
 
+    function padZero(num) {
+        return num < 10 ? `0${num}` : `${num}`;
+    }
+    
+    function subtractThreeHours(timeString) {
+        const [hours, minutes, seconds] = timeString.split(':').map(Number);
+        let newHours = hours - 3;
+        if (newHours < 0) {
+            newHours += 24;
+        }
+        const result = `${padZero(newHours)}:${padZero(minutes)}:${padZero(seconds)}`;
+    
+        return result;
+    }
+
     return (
         <Page className="hidden">
             <Navbar className="hidden-nav">
@@ -112,7 +127,12 @@ const HiddenPage = ({f7router, user}) => {
                                 // style={{ top: `${vlData.topPosition}px` }}
                                 virtualListIndex={chatData.indexOf(item)}
                             >
-                                <div style={{color: "#A5A385"}}>{item.username} {item.createdAt}</div>
+                                <div style={{color: "#A5A385", display: "flex", justifyContent: "space-between"}}>
+                                    {item.username} 
+                                    <div
+                                        style={{fontSize: "small", color: "grey", margin: "0.2rem"}}
+                                    >{subtractThreeHours(item.created_at.substring(11, 19))} {item.created_at.substring(0, 10)}</div>
+                                </div>
                                 
                                 <div className='form-description' dangerouslySetInnerHTML={createMarkup(stripDiamondSymbol(item.content))} />
                             </ListItem>
