@@ -111,7 +111,10 @@ const HiddenPage = ({f7router, user}) => {
                                 link="#"
                                 // style={{ top: `${vlData.topPosition}px` }}
                                 virtualListIndex={chatData.indexOf(item)}
-                            ><div style={{color: "#A5A385"}}>{item.username}</div><div className='form-description' dangerouslySetInnerHTML={createMarkup(stripDiamondSymbol(item.content))} />
+                            >
+                                <div style={{color: "#A5A385"}}>{item.username} {item.createdAt}</div>
+                                
+                                <div className='form-description' dangerouslySetInnerHTML={createMarkup(stripDiamondSymbol(item.content))} />
                             </ListItem>
                         ))}
                         <a id="LastMessage"></a>
