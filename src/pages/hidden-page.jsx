@@ -234,7 +234,6 @@ const HiddenPage = ({f7router, user}) => {
             </Block>
             <TextEditor
                 className="message-box"
-                placeholder={"Type a message"}
                 buttons={[
                     ['h1', 'bold', 'italic', 'underline', 'strikeThroughs'],
                 ]}
