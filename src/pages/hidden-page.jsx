@@ -4,7 +4,7 @@ import { Context } from "../components/app";
 import { supabase } from "../js/supabaseClient";
 
 const HiddenPage = ({f7router, user}) => {
-    const [cooldown, setCooldown] = useState(false)
+    const [cooldown, setCooldown] = useState(true)
     const [logInfo, setLogInfo] = useContext(Context)
     const [chatData, setChatData] = useState()
     const [allUsers, setAllUsers] = useState()
@@ -37,6 +37,7 @@ const HiddenPage = ({f7router, user}) => {
             .from('users')
             .select('*')
         setAllUsers(data)
+        setCooldown(false)
     }
     useEffect(() => {
         getUsersData()
