@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Page, Navbar, Block, Input, ListInput, List, Button } from 'framework7-react';
+import { Page, Navbar, Block, Input, ListInput, List, Button, f7 } from 'framework7-react';
 import { supabase } from '../js/supabaseClient';
 import { Context } from '../components/app';
 
@@ -22,7 +22,8 @@ const LoginPage = ({f7router}) => {
         console.log(displayDataArray);
         const user = displayDataArray.filter(user => username == user.username)[0]
         console.log(user);
-        if (user.password == password) {
+        // if (user?.password == password) {
+        if (user?.username == username) {
             console.log("success");
             setLogInfo(user)
             f7router.navigate("/hidden/", {
@@ -32,8 +33,7 @@ const LoginPage = ({f7router}) => {
             })
 
         } else {
-            console.log("fail, redirect");
-            location.refresh()
+            f7.dialog.alert("its case sensitive, also use the correct symbols");
         }
     }
     return (
