@@ -28,7 +28,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "skeleton-elements": "^4.0.1",
-    "swiper": "^11.0.5"
+    "swiper": "^11.0.5",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.0",

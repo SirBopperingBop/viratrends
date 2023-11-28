@@ -2,6 +2,8 @@ import { Block, Button, List, ListItem, NavLeft, NavRight, NavTitle, Navbar, Pag
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Context } from "../components/app";
 import { supabase } from "../js/supabaseClient";
+import { getImage, postImage } from "../js/imageFuncs";
+import { v4 as uuidv4 } from 'uuid'
 
 const HiddenPage = ({f7router, user}) => {
     const [cooldown, setCooldown] = useState(true)
@@ -51,10 +53,7 @@ const HiddenPage = ({f7router, user}) => {
                     .from("messages")
                     .upsert(messageData)
                 console.log(error, data)
-                setMessageData({
-                    username: user.username,
-                    content: ""
-                })
+                setMessageData({username: user.username})
             } catch (error) {
                 console.log(error)
             }
@@ -108,7 +107,7 @@ const HiddenPage = ({f7router, user}) => {
     document.onvisibilitychange = function () {
         if (document.visibilityState !== 'visible') {
             setOffline();
-            location.reload();
+            // location.reload();s
         }
     }
     const messageChannel = async () => {
@@ -165,6 +164,28 @@ const HiddenPage = ({f7router, user}) => {
         return result;
     }
 
+    const fileInputRef = useRef(null);
+
+    const handleFileSelect = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleFileChange = (e) => {
+        const fileId = uuidv4();
+        const selectedFile = e.target.files[0];
+        postImage(selectedFile, fileId)
+
+        setMessageData(prev => {
+            return {
+                ...prev,
+                media: {
+                    file: fileId
+                }
+            }
+        })
+        console.log('Selected File:', selectedFile);
+    };
+
     return (
         <Page className="hidden">
             <Navbar className="hidden-nav" style={{height: "5vh"}}>
@@ -190,7 +211,7 @@ const HiddenPage = ({f7router, user}) => {
                                 <ListItem
                                     key={index}
                                 >
-                                    <div style={{color: user.is_online ? "#74ff7f" : "#A5A385", display: "flex", justifyContent: "space-between"}}>
+                                    <div style={{color: user.is_online ? "#74ff7f" : "#a5a3857a", display: "flex", justifyContent: "space-between"}}>
                                     {user.username}</div>
                                 </ListItem>
                             )
@@ -223,15 +244,31 @@ const HiddenPage = ({f7router, user}) => {
                                     {item.username} 
                                     <div
                                         style={{fontSize: "small", color: "grey", margin: "0.2rem"}}
-                                    >{subtractThreeHours(item.created_at.substring(11, 19))} {item.created_at.substring(0, 10)}</div>
+                                        >{subtractThreeHours(item.created_at.substring(11, 19))} {item.created_at.substring(0, 10)}</div>
                                 </div>
-                                
+                                {
+                                    item?.media?.file &&
+                                    <img src={getImage(item.media.file)} style={{maxWidth: "100vw"}}/>
+                                }
                                 <div className='form-description' dangerouslySetInnerHTML={createMarkup(stripDiamondSymbol(item.content))} />
                             </ListItem>
                         ))}
                         <a id="LastMessage"></a>
                 </List>
             </Block>
+            <Button 
+                className="upload"
+                fill
+                style={{backgroundColor: cooldown ? "tomato" : "rgb(165, 163, 133)"}}
+                onClick={cooldown ? console.log("fuckin wait") : handleFileSelect}
+            >File</Button>
+            {/* Hidden file input */}
+            <input
+                ref={fileInputRef}
+                type="file"
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+            />
             <TextEditor
                 className="message-box"
                 buttons={[
@@ -243,7 +280,7 @@ const HiddenPage = ({f7router, user}) => {
             <Button
                 className="send"
                 fill
-                style={{backgroundColor: cooldown ? "tomato" : "rgb(165, 163, 133)"}}
+                style={{backgroundColor: cooldown ? "tomato" : "rgb(77, 120, 77)"}}
                 onClick={cooldown ? console.log("fuckin wait") : handleSendMessage}
             >Send</Button>
         </Page>
