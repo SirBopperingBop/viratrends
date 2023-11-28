@@ -42,7 +42,8 @@ const HiddenPage = ({f7router, user}) => {
         getUsersData()
     }, [])
 
-    const handleSendMessage = async () => {
+    const handleSendMessage = async e => {
+        e.preventDefault()
         if (messageData.content !== "" && cooldown == false) {
             setCooldown(true)
             try {
