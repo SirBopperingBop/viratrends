@@ -1,4 +1,4 @@
-import { Block, Button, List, ListItem, NavLeft, NavTitle, Navbar, Page, TextEditor } from "framework7-react";
+import { Block, Button, List, ListItem, NavLeft, NavRight, NavTitle, Navbar, Page, Popover, TextEditor } from "framework7-react";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Context } from "../components/app";
 import { supabase } from "../js/supabaseClient";
@@ -7,6 +7,7 @@ const HiddenPage = ({f7router, user}) => {
     const [cooldown, setCooldown] = useState(false)
     const [logInfo, setLogInfo] = useContext(Context)
     const [chatData, setChatData] = useState()
+    const [allUsers, setAllUsers] = useState()
     const [messageData, setMessageData] = useState({
         username: user.username,
         content: ""
@@ -20,7 +21,6 @@ const HiddenPage = ({f7router, user}) => {
             }
         })
     }
-    console.log(messageData);
     const getTableData = async () => {
         const { data, error } = await supabase
             .from('messages')
@@ -30,6 +30,16 @@ const HiddenPage = ({f7router, user}) => {
     }
     useEffect(() => {
         getTableData()
+    }, [])
+
+    const getUsersData = async () => {
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+        setAllUsers(data)
+    }
+    useEffect(() => {
+        getUsersData()
     }, [])
 
     const handleSendMessage = async () => {
@@ -69,21 +79,72 @@ const HiddenPage = ({f7router, user}) => {
         document.getElementById('LastMessage').scrollIntoView();
     }, [chatData, messageData])
 
-
-    const createChannel = async () => {
+    const setOnline = async () => {
+        try {
+            const { data, error } = await supabase
+                .from("users")
+                .update({ is_online: true })
+                .eq("username", logInfo.username);
+            console.log(data, error);
+        } catch (error) {
+            console.log(error)
+        }
+        console.log("online");
+    }
+    const setOffline = async () => {
+        try {
+            const { data, error } = await supabase
+                .from("users")
+                .update({ is_online: false })
+                .eq("username", logInfo.username);
+            console.log(data, error);
+        } catch (error) {
+            console.log(error)
+        }
+        console.log("offline");
+    }
+    document.onvisibilitychange = function () {
+        if (document.visibilityState === 'hidden') {
+            // setOffline();
+            // location.reload();
+        }
+    }
+    const messageChannel = async () => {
         await supabase.channel('messages_channel')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload) => {
                 console.log(payload)
                 getTableData()
             })
             ?.subscribe(
-                (response) => console.log('Subscription response:', response),
+                (response) => {
+                    console.log('Subscription response:', response)
+                    if (response == "SUBSCRIBED") {
+                        setOnline()
+                    }
+                },
+                (error) => console.error('Subscription error:', error)
+            )
+    }
+    const usersChannel = async () => {
+        await supabase.channel('users_channel')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, (payload) => {
+                console.log(payload)
+                getUsersData()
+            })
+            ?.subscribe(
+                (response) => {
+                    console.log('Subscription response:', response)
+                    if (response == "SUBSCRIBED") {
+                        setOnline()
+                    }
+                },
                 (error) => console.error('Subscription error:', error)
             )
     }
 
     useEffect(() => {
-        createChannel()
+        messageChannel()
+        usersChannel()
     }, [])
 
     function padZero(num) {
@@ -103,9 +164,37 @@ const HiddenPage = ({f7router, user}) => {
 
     return (
         <Page className="hidden">
-            <Navbar className="hidden-nav">
+            <Navbar className="hidden-nav" style={{height: "5vh"}}>
                 <NavTitle>Dell and Dandelion</NavTitle>
+                <NavRight>
+                    <Button
+                        popoverOpen="#online"
+                        onClick={getUsersData}
+                        style={{color: "#74ff7f", backgroundColor: "#74ff802b"}}
+                    >{allUsers && allUsers.filter(user => user.is_online == true).length} Online</Button>
+                </NavRight>
             </Navbar>
+            <Popover
+                id="online"
+            >
+                <List
+                    style={{backgroundColor: "#222222"}}
+                >
+                    {
+                        allUsers &&
+                        allUsers.map((user, index) => {
+                            return (
+                                <ListItem
+                                    key={index}
+                                >
+                                    <div style={{color: user.is_online ? "#74ff7f" : "#A5A385", display: "flex", justifyContent: "space-between"}}>
+                                    {user.username}</div>
+                                </ListItem>
+                            )
+                        })
+                    }
+                </List>
+            </Popover>
             <Block
                 className="chat"
             >
@@ -127,7 +216,7 @@ const HiddenPage = ({f7router, user}) => {
                                 // style={{ top: `${vlData.topPosition}px` }}
                                 virtualListIndex={chatData.indexOf(item)}
                             >
-                                <div style={{color: "#A5A385", display: "flex", justifyContent: "space-between"}}>
+                                <div style={{color: item.username == "Dell" ? "#f47fff" : "#A5A385", display: "flex", justifyContent: "space-between"}}>
                                     {item.username} 
                                     <div
                                         style={{fontSize: "small", color: "grey", margin: "0.2rem"}}
