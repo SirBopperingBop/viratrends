@@ -245,7 +245,7 @@ const HiddenPage = ({f7router, user}) => {
                 className="send"
                 fill
                 style={{backgroundColor: cooldown ? "tomato" : "rgb(165, 163, 133)"}}
-                onClick={handleSendMessage}
+                onClick={cooldown ? console.log("fuckin wait") : handleSendMessage}
             >Send</Button>
         </Page>
     )

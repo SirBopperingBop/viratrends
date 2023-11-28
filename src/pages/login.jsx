@@ -46,7 +46,8 @@ const LoginPage = ({f7router}) => {
                     <ListInput label='Username'
                         onChange={e => setUsername(e.target.value)}
                         ></ListInput>
-                    <ListInput label='Password'
+                    <ListInput
+                        label='Password'
                         onChange={e => setPassword(e.target.value)}
                     ></ListInput>
                     <Button
