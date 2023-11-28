@@ -42,10 +42,7 @@ const HiddenPage = ({f7router, user}) => {
         getUsersData()
     }, [])
 
-    const inputRef = useRef(null);
-
     const handleSendMessage = async e => {
-        e.preventDefault()
         if (messageData.content !== "" && cooldown == false) {
             setCooldown(true)
             try {
@@ -61,7 +58,6 @@ const HiddenPage = ({f7router, user}) => {
                 console.log(error)
             }
         }
-        inputRef.current.focus()
     }
 
     function createMarkup(htlmString) {
@@ -234,7 +230,6 @@ const HiddenPage = ({f7router, user}) => {
                 </List>
             </Block>
             <TextEditor
-                ref={inputRef}
                 className="message-box"
                 placeholder={"Type a message"}
                 buttons={[
