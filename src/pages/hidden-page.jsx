@@ -86,6 +86,7 @@ const HiddenPage = ({f7router, user}) => {
                 .update({ is_online: true })
                 .eq("username", logInfo.username);
             console.log(data, error);
+            getUsersData()
         } catch (error) {
             console.log(error)
         }
