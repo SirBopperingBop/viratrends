@@ -105,8 +105,8 @@ const HiddenPage = ({f7router, user}) => {
     }
     document.onvisibilitychange = function () {
         if (document.visibilityState === 'hidden') {
-            // setOffline();
-            // location.reload();
+            setOffline();
+            location.reload();
         }
     }
     const messageChannel = async () => {
