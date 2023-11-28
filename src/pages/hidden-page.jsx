@@ -104,7 +104,7 @@ const HiddenPage = ({f7router, user}) => {
         console.log("offline");
     }
     document.onvisibilitychange = function () {
-        if (document.visibilityState === 'hidden') {
+        if (document.visibilityState !== 'visible') {
             setOffline();
             location.reload();
         }
