@@ -136,6 +136,7 @@ const HiddenPage = ({f7router, user}) => {
                     console.log('Subscription response:', response)
                     if (response == "SUBSCRIBED") {
                         setOnline()
+                        getUsersData()
                     }
                 },
                 (error) => console.error('Subscription error:', error)
