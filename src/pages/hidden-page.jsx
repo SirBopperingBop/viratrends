@@ -2,7 +2,7 @@ import { Block, Button, List, ListItem, NavLeft, NavRight, NavTitle, Navbar, Pag
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Context } from "../components/app";
 import { supabase } from "../js/supabaseClient";
-import { getImage, postImage } from "../js/imageFuncs";
+import { getImage, postImage, removeImage } from "../js/imageFuncs";
 import { v4 as uuidv4 } from 'uuid'
 
 const HiddenPage = ({f7router, user}) => {
@@ -12,6 +12,7 @@ const HiddenPage = ({f7router, user}) => {
     const [allUsers, setAllUsers] = useState()
     const [contentChange, setContentChange] = useState()
     const [currentChannel, setCurrentChannel] = useState()
+    const currentFile = useRef();
     const [messageData, setMessageData] = useState({
         username: user.username,
         recipient: currentChannel
@@ -59,8 +60,9 @@ const HiddenPage = ({f7router, user}) => {
     }, [])
 
     const handleSendMessage = async e => {
-        if (messageData.content !== "" && cooldown == false) {
+        if (messageData?.content !== "" || messageData?.media?.file && cooldown == false) {
             setCooldown(true)
+            postImage(currentFile, messageData.media.file)
             try {
                 const { data, error } = await supabase
                     .from("messages")
@@ -186,7 +188,8 @@ const HiddenPage = ({f7router, user}) => {
     const handleFileChange = (e) => {
         const fileId = uuidv4();
         const selectedFile = e.target.files[0];
-        postImage(selectedFile, fileId)
+        currentFile.current = selectedFile;
+        removeImage(messageData?.media?.file)
 
         setMessageData(prev => {
             return {
@@ -197,6 +200,7 @@ const HiddenPage = ({f7router, user}) => {
             }
         })
         console.log('Selected File:', selectedFile);
+        setContentChange(e)
     };
 
     const goTab = (recipient) => {
@@ -321,7 +325,7 @@ const HiddenPage = ({f7router, user}) => {
                                                 item?.media?.file &&
                                                 <img src={getImage(item.media.file)} style={{ maxWidth: "100vw" }} />
                                             }
-                                            <div className='form-description' dangerouslySetInnerHTML={createMarkup(stripDiamondSymbol(item.content))} />
+                                            <div className='form-description' dangerouslySetInnerHTML={createMarkup(stripDiamondSymbol(item?.content || ""))} />
                                         </ListItem>
                                     )
                                 }
@@ -333,9 +337,9 @@ const HiddenPage = ({f7router, user}) => {
             <Button 
                 className="upload"
                 fill
-                style={{backgroundColor: cooldown ? "tomato" : "rgb(165, 163, 133)"}}
+                style={{backgroundColor: cooldown ? "tomato" : messageData?.media?.file ? "tomato" : "rgb(165, 163, 133)"}}
                 onClick={cooldown ? console.log("fuckin wait") : handleFileSelect}
-            >File</Button>
+            >{messageData?.media?.file ? "Change file" : "Upload File"}</Button>
             {/* Hidden file input */}
             <input
                 ref={fileInputRef}

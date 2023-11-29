@@ -9,7 +9,7 @@ function extractFileNameFromUrl(url) {
     return parts[parts.length - 1];
 }
 
-export const removeImage = async (imageId, ) => {
+export const removeImage = async (imageId) => {
     const { delData, delError } = await supabase
         .storage
         .from('media')
@@ -18,7 +18,8 @@ export const removeImage = async (imageId, ) => {
     console.log(delData || delError);
 }
 
-export const postImage = async (file, imageId) => {
+export const postImage = async (file, imageId, prevImageId) => {
+    removeImage(getImage(prevImageId))
     const { uplData, uplError } = await supabase
         .storage
         .from("media")
