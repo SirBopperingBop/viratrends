@@ -193,7 +193,7 @@ const HiddenPage = ({f7router, user}) => {
 
     const handleFileChange = (e) => {
         const fileId = uuidv4();
-        const selectedFile = e.target.files[0];
+        const selectedFile = e?.target?.files?.[0];
         currentFile.current = selectedFile;
         removeImage(messageData?.media?.file)
 
