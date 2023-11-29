@@ -98,17 +98,6 @@
     padding: 0 !important;
     border: 1px solid var(--f7-theme-color);
 }
-.travel-btn {
-    padding: 0;
-    margin: 0;
-    height: calc(151vh/7 - 1.5rem);
-    background-size: cover;
-    background-image: inherit;
-    width: 100%;
-}
-.travel-btn-list {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; 
-    height: 140vh;
+.no-rad {
+    border-radius: 0!important;
 }

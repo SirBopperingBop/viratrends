@@ -10,19 +10,32 @@ const HiddenPage = ({f7router, user}) => {
     const [logInfo, setLogInfo] = useContext(Context)
     const [chatData, setChatData] = useState()
     const [allUsers, setAllUsers] = useState()
+    const [contentChange, setContentChange] = useState()
+    const [currentChannel, setCurrentChannel] = useState()
     const [messageData, setMessageData] = useState({
         username: user.username,
-        content: ""
+        recipient: currentChannel
     })
 
     const handleChange = e => {
         setMessageData(prev => {
+            console.log(currentChannel);
             return {
                 ...prev,
-                content: e
+                content: e,
             }
         })
+        setContentChange(e)
     }
+    useEffect(() => {
+        setMessageData(prev => {
+            return {
+                ...prev,
+                recipient: currentChannel
+            }
+        })
+    }, [contentChange])
+    console.log(messageData);
     const getTableData = async () => {
         const { data, error } = await supabase
             .from('messages')
@@ -107,7 +120,7 @@ const HiddenPage = ({f7router, user}) => {
     document.onvisibilitychange = function () {
         if (document.visibilityState !== 'visible') {
             setOffline();
-            // location.reload();s
+            location.reload();
         }
     }
     const messageChannel = async () => {
@@ -186,10 +199,24 @@ const HiddenPage = ({f7router, user}) => {
         console.log('Selected File:', selectedFile);
     };
 
+    const goTab = (recipient) => {
+        setCurrentChannel(recipient)
+        setMessageData(prev => {
+            return {
+                ...prev,
+                recipient: currentChannel
+            }
+        })
+    }
+
+    useEffect(() => {
+        getUsersData()
+    }, [currentChannel])
+
     return (
         <Page className="hidden">
             <Navbar className="hidden-nav" style={{height: "5vh"}}>
-                <NavTitle>Dell and Dandelion</NavTitle>
+                <NavTitle>{currentChannel == undefined ? "Dell and Dandelion" : `Private messaging ${currentChannel}`}</NavTitle>
                 <NavRight>
                     <Button
                         popoverOpen="#online"
@@ -202,7 +229,9 @@ const HiddenPage = ({f7router, user}) => {
                 id="online"
             >
                 <List
-                    style={{backgroundColor: "#222222"}}
+                    style={{
+                        backgroundColor: "#222222",
+                    }}
                 >
                     {
                         allUsers &&
@@ -210,13 +239,32 @@ const HiddenPage = ({f7router, user}) => {
                             return (
                                 <ListItem
                                     key={index}
+                                    className="no-rad"
+                                    onClick={() => goTab(user.username)}
+                                    style={{
+                                        backgroundColor: currentChannel == user.username ? "#424242" : "#222222",
+                                    }}
                                 >
-                                    <div style={{color: user.is_online ? "#74ff7f" : "#a5a3857a", display: "flex", justifyContent: "space-between"}}>
+                                    <div style={{color: user.is_online ? "#74ff7f" : currentChannel == user.username ? "#c5c3b5" : "#a5a3857a", display: "flex", justifyContent: "space-between", borderRadius: 0}}>
                                     {user.username}</div>
                                 </ListItem>
                             )
                         })
                     }
+                    <ListItem
+                        className="no-rad"
+                        onClick={() => goTab()}
+                        style={{
+                            backgroundColor: currentChannel == undefined ? "#424242" : "#222222",
+                        }}
+                        >
+                        <div style={{
+                            color: currentChannel == undefined ? "#c5c3b5" : "#a5a3857a",
+                            display: "flex", 
+                            justifyContent: "space-between",
+                            }}>
+                        General chat</div>
+                    </ListItem>
                 </List>
             </Popover>
             <Block
@@ -231,28 +279,54 @@ const HiddenPage = ({f7router, user}) => {
                     }}
                 >
                         {
-                        chatData &&
-                        chatData.map((item, index) => (
-                            <ListItem
-                                key={index}
-                                className="message"
-                                link="#"
-                                // style={{ top: `${vlData.topPosition}px` }}
-                                virtualListIndex={chatData.indexOf(item)}
-                            >
-                                <div style={{color: item.username == "Dell" ? "#f47fff" : "#A5A385", display: "flex", justifyContent: "space-between"}}>
-                                    {item.username} 
-                                    <div
-                                        style={{fontSize: "small", color: "grey", margin: "0.2rem"}}
-                                        >{subtractThreeHours(item.created_at.substring(11, 19))} {item.created_at.substring(0, 10)}</div>
-                                </div>
-                                {
-                                    item?.media?.file &&
-                                    <img src={getImage(item.media.file)} style={{maxWidth: "100vw"}}/>
+                            chatData &&
+                            chatData.map((rawItem, index) => {
+                                let item = false;
+                                switch (rawItem.recipient) {
+                                    case currentChannel:
+                                        if (logInfo.username == rawItem.username) {
+                                            item = rawItem
+                                        }
+                                        break;
+                                    case null:
+                                        if (currentChannel == undefined) {
+                                            item = rawItem
+                                        }
+                                        break
+                                    case undefined:
+                                        if (currentChannel == undefined) {
+                                            item = rawItem
+                                        }
+                                        break
+                                    default:
+                                        return
+                                        break;
                                 }
-                                <div className='form-description' dangerouslySetInnerHTML={createMarkup(stripDiamondSymbol(item.content))} />
-                            </ListItem>
-                        ))}
+                                if (item !== false) {
+                                    return (
+                                        <ListItem
+                                            key={index}
+                                            className="message"
+                                            link="#"
+                                            // style={{ top: `${vlData.topPosition}px` }}
+                                            virtualListIndex={chatData.indexOf(item)}
+                                        >
+                                            <div style={{ color: item.username == "Dell" ? "#f47fff" : "#A5A385", display: "flex", justifyContent: "space-between" }}>
+                                                {item.username}
+                                                <div
+                                                    style={{ fontSize: "small", color: "grey", margin: "0.2rem" }}
+                                                >{subtractThreeHours(item.created_at.substring(11, 19))} {item.created_at.substring(0, 10)}</div>
+                                            </div>
+                                            {
+                                                item?.media?.file &&
+                                                <img src={getImage(item.media.file)} style={{ maxWidth: "100vw" }} />
+                                            }
+                                            <div className='form-description' dangerouslySetInnerHTML={createMarkup(stripDiamondSymbol(item.content))} />
+                                        </ListItem>
+                                    )
+                                }
+                            })
+                        }
                         <a id="LastMessage"></a>
                 </List>
             </Block>
