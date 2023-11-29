@@ -15,7 +15,8 @@ const HiddenPage = ({f7router, user}) => {
     const currentFile = useRef();
     const [messageData, setMessageData] = useState({
         username: user.username,
-        recipient: currentChannel
+        recipient: currentChannel,
+        content: ""
     })
 
     const handleChange = e => {
@@ -122,7 +123,9 @@ const HiddenPage = ({f7router, user}) => {
     document.onvisibilitychange = function () {
         if (document.visibilityState !== 'visible') {
             setOffline();
-            location.reload();
+            if (messageData.content == "") {
+                location.reload();
+            }
         }
     }
     const messageChannel = async () => {
