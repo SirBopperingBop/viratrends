@@ -345,12 +345,17 @@ const HiddenPage = ({f7router, user}) => {
                         <a id="LastMessage"></a>
                 </List>
             </Block>
-            <Button 
-                className="upload"
-                fill
-                style={{backgroundColor: cooldown ? "tomato" : messageData?.media?.file ? "tomato" : "rgb(165, 163, 133)"}}
-                onClick={cooldown ? console.log("fuckin wait") : handleFileSelect}
-            >{messageData?.media?.file ? "Change file" : "Upload File"}</Button>
+            {
+                logInfo.username == "Dell" ?
+                <></>
+                :
+                <Button 
+                    className="upload"
+                    fill
+                    style={{backgroundColor: cooldown ? "tomato" : messageData?.media?.file ? "tomato" : "rgb(165, 163, 133)"}}
+                    onClick={cooldown ? console.log("fuckin wait") : handleFileSelect}
+                >{messageData?.media?.file ? "Change file" : "Upload File"}</Button>
+            }
             {/* Hidden file input */}
             <input
                 ref={fileInputRef}
