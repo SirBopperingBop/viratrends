@@ -297,6 +297,11 @@ const HiddenPage = ({f7router, user}) => {
                                             item = rawItem
                                         }
                                         break;
+                                    case logInfo.username:
+                                        if (rawItem.username == currentChannel) {
+                                            item = rawItem
+                                        }
+                                        break;
                                     case null:
                                         if (currentChannel == undefined) {
                                             item = rawItem
