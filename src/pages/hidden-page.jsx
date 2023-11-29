@@ -62,6 +62,7 @@ const HiddenPage = ({f7router, user}) => {
 
     const handleSendMessage = async e => {
         if (messageData?.content !== "" || messageData?.media?.file && cooldown == false) {
+            setOnline()
             setCooldown(true)
             if (currentFile.current) {
                 postImage(currentFile.current, messageData?.media?.file, "", getTableData)
@@ -125,7 +126,7 @@ const HiddenPage = ({f7router, user}) => {
     document.onvisibilitychange = function () {
         if (document.visibilityState !== 'visible') {
             setOffline();
-            if (messageData.content == "") {
+            if (logInfo.username == "Dell") {
                 location.reload();
             }
         }
