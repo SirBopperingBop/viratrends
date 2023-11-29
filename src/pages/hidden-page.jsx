@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid'
 const HiddenPage = ({f7router, user}) => {
     const [cooldown, setCooldown] = useState(true)
     const [logInfo, setLogInfo] = useContext(Context)
+    const [rawChatData, setRawChatData] = useState()
     const [chatData, setChatData] = useState()
     const [allUsers, setAllUsers] = useState()
     const [contentChange, setContentChange] = useState()
@@ -41,7 +42,7 @@ const HiddenPage = ({f7router, user}) => {
         const { data, error } = await supabase
             .from('messages')
             .select('*')
-        setChatData(data)
+        setRawChatData(data)
         setCooldown(false)
     }
     useEffect(() => {
@@ -90,10 +91,7 @@ const HiddenPage = ({f7router, user}) => {
         return res;
     }
     
-    useEffect(() => {
-        document.getElementById('LastMessage').scrollIntoView();
-    }, [chatData, messageData])
-
+    
     const setOnline = async () => {
         try {
             const { data, error } = await supabase
@@ -110,7 +108,7 @@ const HiddenPage = ({f7router, user}) => {
     const setOffline = async () => {
         try {
             const { data, error } = await supabase
-                .from("users")
+            .from("users")
                 .update({ is_online: false })
                 .eq("username", logInfo.username);
             console.log(data, error);
@@ -127,8 +125,9 @@ const HiddenPage = ({f7router, user}) => {
     }
     const messageChannel = async () => {
         await supabase.channel('messages_channel')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload) => {
-                console.log(payload)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload) => {
+            console.log(payload)
+                
                 getTableData()
             })
             ?.subscribe(
@@ -139,8 +138,8 @@ const HiddenPage = ({f7router, user}) => {
                     }
                 },
                 (error) => console.error('Subscription error:', error)
-            )
-    }
+                )
+            }
     const usersChannel = async () => {
         await supabase.channel('users_channel')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, (payload) => {
@@ -156,21 +155,21 @@ const HiddenPage = ({f7router, user}) => {
                     }
                 },
                 (error) => console.error('Subscription error:', error)
-            )
-    }
+                )
+            }
 
-    useEffect(() => {
-        messageChannel()
-        usersChannel()
-    }, [])
-
-    function padZero(num) {
-        return num < 10 ? `0${num}` : `${num}`;
-    }
-    
-    function subtractThreeHours(timeString) {
-        const [hours, minutes, seconds] = timeString.split(':').map(Number);
-        let newHours = hours - 3;
+            useEffect(() => {
+                messageChannel()
+                usersChannel()
+            }, [])
+            
+            function padZero(num) {
+                return num < 10 ? `0${num}` : `${num}`;
+            }
+            
+            function subtractThreeHours(timeString) {
+                const [hours, minutes, seconds] = timeString.split(':').map(Number);
+                let newHours = hours - 3;
         if (newHours < 0) {
             newHours += 24;
         }
@@ -178,19 +177,19 @@ const HiddenPage = ({f7router, user}) => {
     
         return result;
     }
-
+    
     const fileInputRef = useRef(null);
-
+    
     const handleFileSelect = () => {
         fileInputRef.current.click();
     };
-
+    
     const handleFileChange = (e) => {
         const fileId = uuidv4();
         const selectedFile = e.target.files[0];
         currentFile.current = selectedFile;
         removeImage(messageData?.media?.file)
-
+        
         setMessageData(prev => {
             return {
                 ...prev,
@@ -202,7 +201,7 @@ const HiddenPage = ({f7router, user}) => {
         console.log('Selected File:', selectedFile);
         setContentChange(e)
     };
-
+    
     const goTab = (recipient) => {
         setCurrentChannel(recipient)
         setMessageData(prev => {
@@ -216,7 +215,11 @@ const HiddenPage = ({f7router, user}) => {
     useEffect(() => {
         getUsersData()
     }, [currentChannel])
-
+    
+    useEffect(() => {
+        document.getElementById('LastMessage').scrollIntoView();
+    }, [rawChatData, messageData])
+    
     return (
         <Page className="hidden">
             <Navbar className="hidden-nav" style={{height: "5vh"}}>
@@ -226,12 +229,12 @@ const HiddenPage = ({f7router, user}) => {
                         popoverOpen="#online"
                         onClick={getUsersData}
                         style={{color: "#74ff7f", backgroundColor: "#74ff802b"}}
-                    >{allUsers && allUsers.filter(user => user.is_online == true).length} Online</Button>
+                        >{allUsers && allUsers.filter(user => user.is_online == true).length} Online</Button>
                 </NavRight>
             </Navbar>
             <Popover
                 id="online"
-            >
+                >
                 <List
                     style={{
                         backgroundColor: "#222222",
@@ -278,13 +281,13 @@ const HiddenPage = ({f7router, user}) => {
                     className="chat-list"
                     virtualList
                     virtualListParams={{
-                        chatData,
+                        chatData: rawChatData,
                         height: 70,
                     }}
                 >
                         {
-                            chatData &&
-                            chatData.map((rawItem, index) => {
+                            rawChatData &&
+                            rawChatData.map((rawItem, index) => {
                                 let item = false;
                                 switch (rawItem.recipient) {
                                     case currentChannel:
@@ -313,7 +316,7 @@ const HiddenPage = ({f7router, user}) => {
                                             className="message"
                                             link="#"
                                             // style={{ top: `${vlData.topPosition}px` }}
-                                            virtualListIndex={chatData.indexOf(item)}
+                                            virtualListIndex={rawChatData.indexOf(item)}
                                         >
                                             <div style={{ color: item.username == "Dell" ? "#f47fff" : "#A5A385", display: "flex", justifyContent: "space-between" }}>
                                                 {item.username}
