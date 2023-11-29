@@ -62,7 +62,7 @@ const HiddenPage = ({f7router, user}) => {
     const handleSendMessage = async e => {
         if (messageData?.content !== "" || messageData?.media?.file && cooldown == false) {
             setCooldown(true)
-            postImage(currentFile, messageData.media.file)
+            postImage(currentFile.current, messageData.media.file, "", getTableData)
             try {
                 const { data, error } = await supabase
                     .from("messages")

@@ -18,12 +18,16 @@ export const removeImage = async (imageId) => {
     console.log(delData || delError);
 }
 
-export const postImage = async (file, imageId, prevImageId) => {
+export const postImage = async (file, imageId, prevImageId, customFunc) => {
     removeImage(getImage(prevImageId))
-    const { uplData, uplError } = await supabase
-        .storage
-        .from("media")
-        .upload(`${imageId}`, file)
-    if (uplError) return uplError
-    console.log(uplData || uplError);
+    try {
+        const { uplData, uplError } = await supabase
+            .storage
+            .from("media")
+            .upload(`${imageId}`, file)
+    } catch (uplError) {
+        return uplError
+    } finally {
+        customFunc()
+    }
 }
