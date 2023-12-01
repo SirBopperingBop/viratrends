@@ -106,10 +106,13 @@ const HiddenPage = ({f7router, user}) => {
                 .eq("username", logInfo.username);
             console.log(data, error);
             getUsersData()
+            console.log("online");
+            setTimeout(() => {
+                setOffline()
+            }, 300000);
         } catch (error) {
             console.log(error)
         }
-        console.log("online");
     }
     const setOffline = async () => {
         try {
@@ -136,6 +139,7 @@ const HiddenPage = ({f7router, user}) => {
             .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload) => {
                 console.log(payload)
                 getTableData()
+
             })
             ?.subscribe(
                 (response) => {
