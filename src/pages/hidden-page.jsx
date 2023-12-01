@@ -113,9 +113,6 @@ const HiddenPage = ({f7router, user}) => {
             console.log(data, error);
             getUsersData()
             console.log("online");
-            // setTimeout(() => {
-            //     setOffline()
-            // }, 300000);
         } catch (error) {
             console.log(error)
         }
