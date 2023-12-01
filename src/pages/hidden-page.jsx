@@ -98,8 +98,14 @@ const HiddenPage = ({f7router, user}) => {
         document.getElementById('LastMessage').scrollIntoView();
     }, [chatData, messageData])
 
+    
     const setOnline = async () => {
+        let timeoutHandle;
         try {
+            window.clearTimeout(timeoutHandle);
+            timeoutHandle = window.setTimeout(() => {
+                setOffline()
+            }, 300000);
             const { data, error } = await supabase
                 .from("users")
                 .update({ is_online: true })
@@ -107,9 +113,9 @@ const HiddenPage = ({f7router, user}) => {
             console.log(data, error);
             getUsersData()
             console.log("online");
-            setTimeout(() => {
-                setOffline()
-            }, 300000);
+            // setTimeout(() => {
+            //     setOffline()
+            // }, 300000);
         } catch (error) {
             console.log(error)
         }
