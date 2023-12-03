@@ -338,11 +338,12 @@ const HiddenPage = ({f7router, user}) => {
                                             </div>
                                             {
                                                 item?.media?.isVideo ?
-                                                    <video className="msg-video" controls>
+                                                <video className="msg-video" controls>
                                                         <source src={getImage(item?.media?.file)}></source>
                                                         video error 
                                                     </video>
                                                 :
+                                                item?.media?.file &&
                                                 <img src={getImage(item?.media?.file)} style={{ maxWidth: "100vw" }} />
                                             }
                                             <div className='form-description' dangerouslySetInnerHTML={createMarkup(stripDiamondSymbol(item?.content || ""))} />
