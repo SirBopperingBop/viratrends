@@ -132,9 +132,6 @@ const HiddenPage = ({f7router, user}) => {
     document.onvisibilitychange = function () {
         if (document.visibilityState !== 'visible') {
             setOffline();
-            if (logInfo.username == "Dell") {
-                location.reload();
-            }
         }
     }
     const messageChannel = async () => {
