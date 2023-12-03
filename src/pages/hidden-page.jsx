@@ -337,8 +337,13 @@ const HiddenPage = ({f7router, user}) => {
                                                 >{subtractThreeHours(item.created_at.substring(11, 19))} {item.created_at.substring(0, 10)}</div>
                                             </div>
                                             {
-                                                item?.media?.file &&
-                                                <img src={getImage(item.media.file)} style={{ maxWidth: "100vw" }} />
+                                                item?.media?.isVideo ?
+                                                    <video className="msg-video" controls>
+                                                        <source src={getImage(item?.media?.file)}></source>
+                                                        video error 
+                                                    </video>
+                                                :
+                                                <img src={getImage(item?.media?.file)} style={{ maxWidth: "100vw" }} />
                                             }
                                             <div className='form-description' dangerouslySetInnerHTML={createMarkup(stripDiamondSymbol(item?.content || ""))} />
                                         </ListItem>
@@ -349,17 +354,12 @@ const HiddenPage = ({f7router, user}) => {
                         <a id="LastMessage"></a>
                 </List>
             </Block>
-            {
-                logInfo.username == "Dell" ?
-                <></>
-                :
-                <Button 
-                    className="upload"
-                    fill
-                    style={{backgroundColor: cooldown ? "tomato" : messageData?.media?.file ? "tomato" : "rgb(165, 163, 133)"}}
-                    onClick={cooldown ? console.log("fuckin wait") : handleFileSelect}
-                >{messageData?.media?.file ? "Change file" : "Upload File"}</Button>
-            }
+            <Button
+                className="upload"
+                fill
+                style={{ backgroundColor: cooldown ? "tomato" : messageData?.media?.file ? "tomato" : "rgb(165, 163, 133)" }}
+                onClick={cooldown ? console.log("fuckin wait") : handleFileSelect}
+            >{messageData?.media?.file ? "Change file" : "Upload File"}</Button>
             {/* Hidden file input */}
             <input
                 ref={fileInputRef}
