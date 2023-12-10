@@ -99,10 +99,8 @@ const HiddenPage = ({f7router, user}) => {
         document.getElementById('LastMessage').scrollIntoView();
     }
     useEffect(() => {
-        setTimeout(() => {
-            scrollToBottom()
-        }, 3000);
-    }, [])
+        scrollToBottom()
+    }, [chatData, messageData])
 
     
     const setOnline = async () => {
