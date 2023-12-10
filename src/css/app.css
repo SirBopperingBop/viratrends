@@ -91,6 +91,15 @@
     max-width: 100vw;
     min-width: 100vw;
 }
+.scroll-down-btn {
+    position: absolute;
+    bottom: 16vh;
+    right: 1vw;
+    color: rgba(165, 163, 133, 0.801);
+    background-color: #2222228c;
+    width: 11.5vw;
+    height: 12vw;
+}
 .upload {
     z-index: 2;
     position: absolute;

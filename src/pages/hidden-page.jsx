@@ -1,4 +1,4 @@
-import { Block, Button, List, ListItem, NavLeft, NavRight, NavTitle, Navbar, Page, Popover, TextEditor, f7 } from "framework7-react";
+import { Block, Button, Icon, List, ListItem, NavLeft, NavRight, NavTitle, Navbar, Page, Popover, TextEditor, f7 } from "framework7-react";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Context } from "../components/app";
 import { supabase } from "../js/supabaseClient";
@@ -95,10 +95,14 @@ const HiddenPage = ({f7router, user}) => {
         }
         return res;
     }
-    
-    useEffect(() => {
+    const scrollToBottom = () => {
         document.getElementById('LastMessage').scrollIntoView();
-    }, [chatData, messageData])
+    }
+    useEffect(() => {
+        setTimeout(() => {
+            scrollToBottom()
+        }, 3000);
+    }, [])
 
     
     const setOnline = async () => {
@@ -229,7 +233,7 @@ const HiddenPage = ({f7router, user}) => {
         const selectedFile = e?.target?.files?.[0];
         currentFile.current = selectedFile;
         removeImage(messageData?.media?.file)
-        
+
         setMessageData(prev => {
             return {
                 ...prev,
@@ -420,6 +424,9 @@ const HiddenPage = ({f7router, user}) => {
                 style={{backgroundColor: cooldown ? "tomato" : "rgb(77, 120, 77)"}}
                 onClick={cooldown ? console.log("fuckin wait") : handleSendMessage}
             >Send</Button>
+            <Button className="scroll-down-btn" fill onClick={scrollToBottom}>
+                <Icon f7="arrow_down"></Icon>
+            </Button>
         </Page>
     )
 }
