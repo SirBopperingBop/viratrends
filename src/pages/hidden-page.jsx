@@ -1,4 +1,4 @@
-import { Block, Button, List, ListItem, NavLeft, NavRight, NavTitle, Navbar, Page, Popover, TextEditor } from "framework7-react";
+import { Block, Button, List, ListItem, NavLeft, NavRight, NavTitle, Navbar, Page, Popover, TextEditor, f7 } from "framework7-react";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Context } from "../components/app";
 import { supabase } from "../js/supabaseClient";
@@ -6,6 +6,7 @@ import { getImage, postImage, removeImage } from "../js/imageFuncs";
 import { v4 as uuidv4 } from 'uuid'
 
 const HiddenPage = ({f7router, user}) => {
+    const addingFile = useRef()
     const [cooldown, setCooldown] = useState(true)
     const [logInfo, setLogInfo] = useContext(Context)
     const [chatData, setChatData] = useState()
@@ -28,6 +29,7 @@ const HiddenPage = ({f7router, user}) => {
             }
         })
         setContentChange(e)
+        addingFile.current = false;
     }
     useEffect(() => {
         setMessageData(prev => {
@@ -192,7 +194,34 @@ const HiddenPage = ({f7router, user}) => {
     const fileInputRef = useRef(null);
 
     const handleFileSelect = () => {
-        fileInputRef.current.click();
+        addingFile.current = true;
+        f7.dialog.create({
+            title: 'File type',
+            buttons: [
+                {
+                    text: 'Image',
+                    onClick: function () {
+                        fileInputRef.current.click();
+                    }
+                },
+                {
+                    text: 'Video',
+                    onClick: function () {
+                        fileInputRef.current.click();
+                        setMessageData(prev => {
+                            return {
+                                ...prev,
+                                media: {
+                                    ...prev.media,
+                                    isVideo: true
+                                }
+                            }
+                        })
+                    }
+                }
+            ],
+            verticalButtons: true,
+        }).open();
     };
 
     const handleFileChange = (e) => {
@@ -200,12 +229,13 @@ const HiddenPage = ({f7router, user}) => {
         const selectedFile = e?.target?.files?.[0];
         currentFile.current = selectedFile;
         removeImage(messageData?.media?.file)
-
+        
         setMessageData(prev => {
             return {
                 ...prev,
                 media: {
-                    file: fileId
+                    ...prev.media,
+                    file: fileId,
                 }
             }
         })
@@ -221,11 +251,19 @@ const HiddenPage = ({f7router, user}) => {
                 recipient: currentChannel
             }
         })
+        setOnline()
     }
 
     useEffect(() => {
         getUsersData()
     }, [currentChannel])
+
+    document.addEventListener("visibilitychange", function() {
+        setOffline()
+        if (addingFile.current == false) {
+            location.reload()
+        }
+    })
 
     return (
         <Page className="hidden">
