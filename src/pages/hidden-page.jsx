@@ -1,4 +1,4 @@
-import { Block, Button, List, ListItem, NavLeft, NavRight, NavTitle, Navbar, Page, Popover, TextEditor } from "framework7-react";
+import { Block, Button, Icon, List, ListItem, NavLeft, NavRight, NavTitle, Navbar, Page, Popover, TextEditor, f7 } from "framework7-react";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Context } from "../components/app";
 import { supabase } from "../js/supabaseClient";
@@ -6,6 +6,7 @@ import { getImage, postImage, removeImage } from "../js/imageFuncs";
 import { v4 as uuidv4 } from 'uuid'
 
 const HiddenPage = ({f7router, user}) => {
+    const addingFile = useRef()
     const [cooldown, setCooldown] = useState(true)
     const [logInfo, setLogInfo] = useContext(Context)
     const [rawChatData, setRawChatData] = useState()
@@ -16,7 +17,8 @@ const HiddenPage = ({f7router, user}) => {
     const currentFile = useRef();
     const [messageData, setMessageData] = useState({
         username: user.username,
-        recipient: currentChannel
+        recipient: currentChannel,
+        content: ""
     })
 
     const handleChange = e => {
@@ -28,6 +30,7 @@ const HiddenPage = ({f7router, user}) => {
             }
         })
         setContentChange(e)
+        addingFile.current = false;
     }
     useEffect(() => {
         setMessageData(prev => {
@@ -62,8 +65,11 @@ const HiddenPage = ({f7router, user}) => {
 
     const handleSendMessage = async e => {
         if (messageData?.content !== "" || messageData?.media?.file && cooldown == false) {
+            setOnline()
             setCooldown(true)
-            postImage(currentFile.current, messageData.media.file, "", getTableData)
+            if (currentFile.current) {
+                postImage(currentFile.current, messageData?.media?.file, "", getTableData)
+            }
             try {
                 const { data, error } = await supabase
                     .from("messages")
@@ -90,20 +96,31 @@ const HiddenPage = ({f7router, user}) => {
         }
         return res;
     }
-    
+    const scrollToBottom = () => {
+        document.getElementById('LastMessage').scrollIntoView();
+    }
+    useEffect(() => {
+        scrollToBottom()
+    }, [chatData, messageData])
+
     
     const setOnline = async () => {
+        let timeoutHandle;
         try {
+            window.clearTimeout(timeoutHandle);
+            timeoutHandle = window.setTimeout(() => {
+                setOffline()
+            }, 300000);
             const { data, error } = await supabase
                 .from("users")
                 .update({ is_online: true })
                 .eq("username", logInfo.username);
             console.log(data, error);
             getUsersData()
+            console.log("online");
         } catch (error) {
             console.log(error)
         }
-        console.log("online");
     }
     const setOffline = async () => {
         try {
@@ -120,7 +137,6 @@ const HiddenPage = ({f7router, user}) => {
     document.onvisibilitychange = function () {
         if (document.visibilityState !== 'visible') {
             setOffline();
-            location.reload();
         }
     }
     const messageChannel = async () => {
@@ -129,6 +145,7 @@ const HiddenPage = ({f7router, user}) => {
             console.log(payload)
                 
                 getTableData()
+
             })
             ?.subscribe(
                 (response) => {
@@ -181,12 +198,39 @@ const HiddenPage = ({f7router, user}) => {
     const fileInputRef = useRef(null);
     
     const handleFileSelect = () => {
-        fileInputRef.current.click();
+        addingFile.current = true;
+        f7.dialog.create({
+            title: 'File type',
+            buttons: [
+                {
+                    text: 'Image',
+                    onClick: function () {
+                        fileInputRef.current.click();
+                    }
+                },
+                {
+                    text: 'Video',
+                    onClick: function () {
+                        fileInputRef.current.click();
+                        setMessageData(prev => {
+                            return {
+                                ...prev,
+                                media: {
+                                    ...prev.media,
+                                    isVideo: true
+                                }
+                            }
+                        })
+                    }
+                }
+            ],
+            verticalButtons: true,
+        }).open();
     };
     
     const handleFileChange = (e) => {
         const fileId = uuidv4();
-        const selectedFile = e.target.files[0];
+        const selectedFile = e?.target?.files?.[0];
         currentFile.current = selectedFile;
         removeImage(messageData?.media?.file)
         
@@ -194,7 +238,8 @@ const HiddenPage = ({f7router, user}) => {
             return {
                 ...prev,
                 media: {
-                    file: fileId
+                    ...prev.media,
+                    file: fileId,
                 }
             }
         })
@@ -210,16 +255,20 @@ const HiddenPage = ({f7router, user}) => {
                 recipient: currentChannel
             }
         })
+        setOnline()
     }
 
     useEffect(() => {
         getUsersData()
     }, [currentChannel])
-    
-    useEffect(() => {
-        document.getElementById('LastMessage').scrollIntoView();
-    }, [rawChatData, messageData])
-    
+
+    document.addEventListener("visibilitychange", function() {
+        setOffline()
+        if (addingFile.current !== true) {
+            location.reload()
+        }
+    })
+
     return (
         <Page className="hidden">
             <Navbar className="hidden-nav" style={{height: "5vh"}}>
@@ -295,6 +344,11 @@ const HiddenPage = ({f7router, user}) => {
                                             item = rawItem
                                         }
                                         break;
+                                    case logInfo.username:
+                                        if (rawItem.username == currentChannel) {
+                                            item = rawItem
+                                        }
+                                        break;
                                     case null:
                                         if (currentChannel == undefined) {
                                             item = rawItem
@@ -325,8 +379,14 @@ const HiddenPage = ({f7router, user}) => {
                                                 >{subtractThreeHours(item.created_at.substring(11, 19))} {item.created_at.substring(0, 10)}</div>
                                             </div>
                                             {
+                                                item?.media?.isVideo ?
+                                                <video className="msg-video" controls>
+                                                        <source src={getImage(item?.media?.file)}></source>
+                                                        video error 
+                                                    </video>
+                                                :
                                                 item?.media?.file &&
-                                                <img src={getImage(item.media.file)} style={{ maxWidth: "100vw" }} />
+                                                <img src={getImage(item?.media?.file)} style={{ maxWidth: "100vw" }} />
                                             }
                                             <div className='form-description' dangerouslySetInnerHTML={createMarkup(stripDiamondSymbol(item?.content || ""))} />
                                         </ListItem>
@@ -337,10 +397,10 @@ const HiddenPage = ({f7router, user}) => {
                         <a id="LastMessage"></a>
                 </List>
             </Block>
-            <Button 
+            <Button
                 className="upload"
                 fill
-                style={{backgroundColor: cooldown ? "tomato" : messageData?.media?.file ? "tomato" : "rgb(165, 163, 133)"}}
+                style={{ backgroundColor: cooldown ? "tomato" : messageData?.media?.file ? "tomato" : "rgb(165, 163, 133)" }}
                 onClick={cooldown ? console.log("fuckin wait") : handleFileSelect}
             >{messageData?.media?.file ? "Change file" : "Upload File"}</Button>
             {/* Hidden file input */}
@@ -364,6 +424,9 @@ const HiddenPage = ({f7router, user}) => {
                 style={{backgroundColor: cooldown ? "tomato" : "rgb(77, 120, 77)"}}
                 onClick={cooldown ? console.log("fuckin wait") : handleSendMessage}
             >Send</Button>
+            <Button className="scroll-down-btn" fill onClick={scrollToBottom}>
+                <Icon f7="arrow_down"></Icon>
+            </Button>
         </Page>
     )
 }

@@ -1,6 +1,9 @@
 import { supabase } from "./supabaseClient";
 
 export const getImage = (imageId) => {
+    if (imageId == "undefined" || imageId == undefined) {
+        return        
+    }
     return `https://myzwukslktjvjnsckhhh.supabase.co/storage/v1/object/public/media/${imageId}`
 }
 
