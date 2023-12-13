@@ -135,7 +135,7 @@ const HiddenPage = ({f7router, user}) => {
         console.log("offline");
     }
     document.onvisibilitychange = function () {
-        if (document.visibilityState !== 'visible') {
+        if (document.visibilityState !== 'visible' && logInfo.username !== "Dandelion") {
             setOffline();
         }
     }
@@ -269,6 +269,21 @@ const HiddenPage = ({f7router, user}) => {
         }
     })
 
+
+    const allowInfinite = useRef(true)
+    const loadMore = () => {
+        if (!allowInfinite.current) return;
+        allowInfinite.current = false;
+    
+        setTimeout(() => {
+          setRawChatData(prevState => {
+            //TODO: finish this, preferably in silence
+          })
+          allowInfinite.current = true;
+          setItems([...items]);
+        }, 1000);
+      };
+
     return (
         <Page className="hidden">
             <Navbar className="hidden-nav" style={{height: "5vh"}}>
@@ -323,7 +338,8 @@ const HiddenPage = ({f7router, user}) => {
                     </ListItem>
                 </List>
             </Popover>
-            <Block
+            <Page
+                infinite infiniteTop infiniteDistance={50} infinitePreloader={true} onInfinite={loadMore}
                 className="chat"
             >
                 <List
@@ -396,7 +412,7 @@ const HiddenPage = ({f7router, user}) => {
                         }
                         <a id="LastMessage"></a>
                 </List>
-            </Block>
+            </Page>
             <Button
                 className="upload"
                 fill
