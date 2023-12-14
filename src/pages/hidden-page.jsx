@@ -262,7 +262,7 @@ const HiddenPage = ({f7router, user}) => {
 
     document.addEventListener("visibilitychange", function() {
         setOffline()
-        if (addingFile.current !== true) {
+        if (addingFile.current !== true && logInfo.username !== "Dandelion") {
             location.reload()
         }
     })
