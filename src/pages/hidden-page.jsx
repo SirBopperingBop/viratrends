@@ -44,6 +44,7 @@ const HiddenPage = ({f7router, user}) => {
         const { data, error } = await supabase
             .from('messages')
             .select('*')
+            .order('created_at', { ascending: false })
         setChatData(data)
         setCooldown(false)
     }
