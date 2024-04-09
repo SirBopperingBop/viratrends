@@ -100,6 +100,15 @@
     width: 11.5vw;
     height: 12vw;
 }
+.scroll-top-btn {
+    position: absolute;
+    bottom: 24vh;
+    right: 1vw;
+    color: rgba(165, 163, 133, 0.801);
+    background-color: #2222228c;
+    width: 11.5vw;
+    height: 12vw;
+}
 .upload {
     z-index: 2;
     position: absolute;

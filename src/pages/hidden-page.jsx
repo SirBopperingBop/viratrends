@@ -44,7 +44,7 @@ const HiddenPage = ({f7router, user}) => {
         const { data, error } = await supabase
             .from('messages')
             .select('*')
-            .order('created_at', { ascending: false })
+            .order('created_at', { ascending: true })
         setChatData(data)
         setCooldown(false)
     }
@@ -98,6 +98,9 @@ const HiddenPage = ({f7router, user}) => {
     }
     const scrollToBottom = () => {
         document.getElementById('LastMessage').scrollIntoView();
+    }
+    const scrollToTop = () => {
+        document.getElementById('FirstMessage').scrollIntoView();
     }
     useEffect(() => {
         scrollToBottom()
@@ -263,9 +266,6 @@ const HiddenPage = ({f7router, user}) => {
 
     document.addEventListener("visibilitychange", function() {
         setOffline()
-        if (addingFile.current !== true && logInfo.username !== "Dandelion") {
-            location.reload()
-        }
     })
 
     return (
@@ -333,6 +333,7 @@ const HiddenPage = ({f7router, user}) => {
                         height: 70,
                     }}
                 >
+                    <a id="FirstMessage"></a>
                         {
                             chatData &&
                             chatData.map((rawItem, index) => {
@@ -425,6 +426,9 @@ const HiddenPage = ({f7router, user}) => {
             >Send</Button>
             <Button className="scroll-down-btn" fill onClick={scrollToBottom}>
                 <Icon f7="arrow_down"></Icon>
+            </Button>
+            <Button className="scroll-top-btn" fill onClick={scrollToTop}>
+                <Icon f7="arrow_up"></Icon>
             </Button>
         </Page>
     )
